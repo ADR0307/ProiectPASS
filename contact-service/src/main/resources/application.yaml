@@ -1,3 +1,20 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: contact-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/addressbook
+    username: addressbook
+    password: addressbook
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
