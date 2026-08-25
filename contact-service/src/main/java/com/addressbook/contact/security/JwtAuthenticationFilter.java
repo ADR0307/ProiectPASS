@@ -42,16 +42,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (result.valid()) {
 
-                var auth = new UsernamePasswordAuthenticationToken(
+                var authentication = new UsernamePasswordAuthenticationToken(
                         result.email(),
                         null,
                         List.of(new SimpleGrantedAuthority("ROLE_USER"))
                 );
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
         } catch (Exception ignored) {
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
