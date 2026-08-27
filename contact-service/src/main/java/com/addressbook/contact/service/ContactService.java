@@ -4,6 +4,7 @@ import com.addressbook.contact.dto.ContactResponse;
 import com.addressbook.contact.dto.CreateContactRequest;
 import com.addressbook.contact.dto.UpdateContactRequest;
 import com.addressbook.contact.entity.Contact;
+import com.addressbook.contact.exception.ContactNotFoundException;
 import com.addressbook.contact.repository.ContactRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,25 +19,25 @@ public class ContactService {
         this.repository = repository;
     }
 
-    public List<ContactResponse> getAll(String ownerEmail) {
+    public List<ContactResponse> getAll() {
 
-        return repository.findByOwnerEmail(ownerEmail)
+        return repository.findAll()
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    public ContactResponse getById(Long id, String ownerEmail) {
+    public ContactResponse getById(Long id) {
 
-        Contact contact = repository.findByIdAndOwnerEmail(id, ownerEmail)
-                .orElseThrow(() ->
-                        new RuntimeException("Contact not found"));
+        Contact contact = repository.findById(id)
+                .orElseThrow(() -> new ContactNotFoundException(id));
 
         return toResponse(contact);
     }
 
-    public ContactResponse create(String ownerEmail,
-                                  CreateContactRequest request) {
+    public ContactResponse create(
+            String ownerEmail,
+            CreateContactRequest request) {
 
         Contact contact = Contact.builder()
                 .ownerEmail(ownerEmail)
@@ -50,13 +51,13 @@ public class ContactService {
         return toResponse(repository.save(contact));
     }
 
-    public ContactResponse update(Long id,
-                                  String ownerEmail,
-                                  UpdateContactRequest request) {
+    public ContactResponse update(
+            Long id,
+            String ownerEmail,
+            UpdateContactRequest request) {
 
         Contact contact = repository.findByIdAndOwnerEmail(id, ownerEmail)
-                .orElseThrow(() ->
-                        new RuntimeException("Contact not found"));
+                .orElseThrow(() -> new ContactNotFoundException(id));
 
         contact.setFirstName(request.firstName());
         contact.setLastName(request.lastName());
@@ -67,13 +68,53 @@ public class ContactService {
         return toResponse(repository.save(contact));
     }
 
-    public void delete(Long id, String ownerEmail) {
+    public void delete(
+            Long id,
+            String ownerEmail) {
 
         Contact contact = repository.findByIdAndOwnerEmail(id, ownerEmail)
-                .orElseThrow(() ->
-                        new RuntimeException("Contact not found"));
+                .orElseThrow(() -> new ContactNotFoundException(id));
 
         repository.delete(contact);
+    }
+
+    public List<ContactResponse> search(String ownerEmail, String name) {
+
+        return repository
+                .findByOwnerEmailAndFirstNameContainingIgnoreCaseOrOwnerEmailAndLastNameContainingIgnoreCase(
+                        ownerEmail,
+                        name,
+                        ownerEmail,
+                        name
+                )
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public String exportCsv(String ownerEmail) {
+
+        StringBuilder csv = new StringBuilder();
+
+        csv.append("First Name,Last Name,Phone,Email,Company\n");
+
+        repository.findByOwnerEmail(ownerEmail)
+                .forEach(contact -> csv.append(
+                        String.format(
+                                "%s,%s,%s,%s,%s%n",
+                                contact.getFirstName(),
+                                contact.getLastName(),
+                                safe(contact.getPhone()),
+                                safe(contact.getEmail()),
+                                safe(contact.getCompany())
+                        )
+                ));
+
+        return csv.toString();
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value;
     }
 
     private ContactResponse toResponse(Contact contact) {

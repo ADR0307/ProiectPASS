@@ -11,4 +11,12 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     List<Contact> findByOwnerEmail(String ownerEmail);
 
     Optional<Contact> findByIdAndOwnerEmail(Long id, String ownerEmail);
+
+    List<Contact> findByOwnerEmailAndFirstNameContainingIgnoreCaseOrOwnerEmailAndLastNameContainingIgnoreCase(
+            String owner1,
+            String firstName,
+            String owner2,
+            String lastName
+    );
+
 }

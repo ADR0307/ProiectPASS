@@ -1,68 +1,57 @@
 package com.addressbook.user.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
 import org.springframework.security.config.http.SessionCreationPolicy;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http)
-            throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-
                 .csrf(csrf -> csrf.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
 
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        ))
 
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers(
-                                "/api/auth/**",
-                                "/actuator/**"
+                                HttpMethod.POST,
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/auth/validate"
                         ).permitAll()
 
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers("/actuator/**").permitAll()
 
-                .httpBasic(Customizer.withDefaults());
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
-
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
-
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-
     }
 
     @Bean
-    AuthenticationManager authenticationManager(
+    public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration
     ) throws Exception {
-
         return configuration.getAuthenticationManager();
-
     }
-
 }
