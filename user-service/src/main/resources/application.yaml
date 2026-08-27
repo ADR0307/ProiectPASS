@@ -34,7 +34,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
       properties:
-        spring.json.trusted.packages: "com.addressbook.user"
+        spring.json.trusted.packages: "com.addressbook.user.dto"
 
 jwt:
   secret: U4BPqWW4L6r4zHnFkWwDyCg/LbVM1M5mzIa9Jk4c1lc=

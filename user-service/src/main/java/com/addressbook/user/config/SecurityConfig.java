@@ -18,9 +18,8 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(form -> form.disable())
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
@@ -28,10 +27,15 @@ public class SecurityConfig {
                         ))
 
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/auth/register",
-                                "/api/auth/login",
+                                "/api/auth/login"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
                                 "/api/auth/validate"
                         ).permitAll()
 

@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/addressbook_users</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="addressbook_contacts@localhost" uuid="99a622ec-d77c-4e21-9995-724cab496dcf">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/addressbook_contacts</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

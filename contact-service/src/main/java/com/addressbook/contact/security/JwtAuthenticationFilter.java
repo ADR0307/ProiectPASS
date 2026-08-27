@@ -25,10 +25,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String header = request.getHeader("Authorization");
 
@@ -38,21 +44,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            TokenValidationResponse result = userServiceClient.validate(header);
 
-            if (result.valid()) {
+            TokenValidationResponse result =
+                    userServiceClient.validate(header);
 
-                var authentication = new UsernamePasswordAuthenticationToken(
-                        result.email(),
-                        null,
-                        List.of(new SimpleGrantedAuthority("ROLE_USER"))
-                );
+            if (result != null && result.valid()) {
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                result.email(),
+                                null,
+                                List.of(
+                                        new SimpleGrantedAuthority("ROLE_USER")
+                                )
+                        );
+
+                SecurityContextHolder
+                        .getContext()
+                        .setAuthentication(authentication);
             }
 
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+
             SecurityContextHolder.clearContext();
+
+            System.out.println(
+                    "JWT validation failed: "
+                            + exception.getMessage()
+            );
         }
 
         filterChain.doFilter(request, response);
