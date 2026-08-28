@@ -5,7 +5,9 @@ import {
     DialogContent,
     DialogActions,
     TextField,
-    Button
+    Button,
+    Avatar,
+    Box
 } from "@mui/material";
 
 const emptyForm = {
@@ -13,15 +15,17 @@ const emptyForm = {
     lastName: "",
     phone: "",
     email: "",
-    company: ""
+    company: "",
+    address: "",
+    picture: ""
 };
 
 export default function ContactForm({
-    open,
-    contact,
-    onClose,
-    onSave
-}) {
+                                        open,
+                                        contact,
+                                        onClose,
+                                        onSave
+                                    }) {
 
     const [form, setForm] = useState(emptyForm);
 
@@ -33,7 +37,9 @@ export default function ContactForm({
                 lastName: contact.lastName || "",
                 phone: contact.phone || "",
                 email: contact.email || "",
-                company: contact.company || ""
+                company: contact.company || "",
+                address: contact.address || "",
+                picture: contact.picture || ""
             });
         } else {
             setForm(emptyForm);
@@ -68,6 +74,22 @@ export default function ContactForm({
             </DialogTitle>
 
             <DialogContent>
+
+                <Box display="flex" justifyContent="center" my={2}>
+                    <Avatar
+                        src={form.picture || ""}
+                        sx={{ width: 90, height: 90 }}
+                    />
+                </Box>
+
+                <TextField
+                    fullWidth
+                    label="Picture URL"
+                    name="picture"
+                    value={form.picture}
+                    onChange={handleChange}
+                    margin="normal"
+                />
 
                 <TextField
                     fullWidth
@@ -114,6 +136,15 @@ export default function ContactForm({
                     onChange={handleChange}
                 />
 
+                <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Address"
+                    name="address"
+                    value={form.address}
+                    onChange={handleChange}
+                />
+
             </DialogContent>
 
             <DialogActions>
@@ -134,4 +165,3 @@ export default function ContactForm({
         </Dialog>
     );
 }
-

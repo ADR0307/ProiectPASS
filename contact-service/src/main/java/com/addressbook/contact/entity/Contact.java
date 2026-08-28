@@ -27,6 +27,12 @@ public class Contact {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Column(length = 500)
+    private String picture;
+
+    @Column(length = 300)
+    private String address;
+
     private String phone;
 
     private String email;

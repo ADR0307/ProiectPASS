@@ -46,6 +46,8 @@ public class ContactService {
                 .phone(request.phone())
                 .email(request.email())
                 .company(request.company())
+                .address(request.address())
+                .picture(request.picture())
                 .build();
 
         return toResponse(repository.save(contact));
@@ -64,6 +66,8 @@ public class ContactService {
         contact.setPhone(request.phone());
         contact.setEmail(request.email());
         contact.setCompany(request.company());
+        contact.setAddress(request.address());
+        contact.setPicture(request.picture());
 
         return toResponse(repository.save(contact));
     }
@@ -96,17 +100,19 @@ public class ContactService {
 
         StringBuilder csv = new StringBuilder();
 
-        csv.append("First Name,Last Name,Phone,Email,Company\n");
+        csv.append("First Name,Last Name,Phone,Email,Company,Address,Picture\n");
 
         repository.findByOwnerEmail(ownerEmail)
                 .forEach(contact -> csv.append(
                         String.format(
-                                "%s,%s,%s,%s,%s%n",
-                                contact.getFirstName(),
-                                contact.getLastName(),
+                                "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
+                                safe(contact.getFirstName()),
+                                safe(contact.getLastName()),
                                 safe(contact.getPhone()),
                                 safe(contact.getEmail()),
-                                safe(contact.getCompany())
+                                safe(contact.getCompany()),
+                                safe(contact.getAddress()),
+                                safe(contact.getPicture())
                         )
                 ));
 
@@ -125,7 +131,9 @@ public class ContactService {
                 contact.getLastName(),
                 contact.getPhone(),
                 contact.getEmail(),
-                contact.getCompany()
+                contact.getCompany(),
+                contact.getAddress(),
+                contact.getPicture()
         );
     }
 }

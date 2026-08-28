@@ -3,35 +3,52 @@ import {
     CardContent,
     Typography,
     Button,
-    Box
+    Box,
+    Avatar
 } from "@mui/material";
 
 export default function ContactCard({
-    contact,
-    onEdit,
-    onDelete
-}) {
+                                        contact,
+                                        onEdit,
+                                        onDelete
+                                    }) {
 
     return (
         <Card sx={{ mb: 2 }}>
 
             <CardContent>
 
-                <Typography variant="h6">
-                    {contact.firstName} {contact.lastName}
-                </Typography>
+                <Box display="flex" alignItems="center" gap={2}>
 
-                <Typography color="text.secondary">
-                    📞 {contact.phone}
-                </Typography>
+                    <Avatar
+                        src={contact.picture || ""}
+                        alt={`${contact.firstName} ${contact.lastName}`}
+                        sx={{ width: 56, height: 56 }}
+                    />
 
-                <Typography color="text.secondary">
-                    ✉️ {contact.email}
-                </Typography>
+                    <Box>
+                        <Typography variant="h6">
+                            {contact.firstName} {contact.lastName}
+                        </Typography>
 
-                <Typography color="text.secondary">
-                    🏢 {contact.company}
-                </Typography>
+                        <Typography color="text.secondary">
+                            📞 {contact.phone}
+                        </Typography>
+
+                        <Typography color="text.secondary">
+                            ✉️ {contact.email}
+                        </Typography>
+
+                        <Typography color="text.secondary">
+                            🏢 {contact.company}
+                        </Typography>
+
+                        <Typography variant="body2">
+                            📍 {contact.address}
+                        </Typography>
+                    </Box>
+
+                </Box>
 
                 <Box sx={{ mt: 2 }}>
 
@@ -58,4 +75,3 @@ export default function ContactCard({
         </Card>
     );
 }
-
